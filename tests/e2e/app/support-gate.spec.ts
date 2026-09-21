@@ -54,4 +54,23 @@ test.describe('browser support gate', () => {
     await notice.getByText('Details', { exact: true }).click()
     await expect(notice.locator('pre')).toContainText('history is unavailable')
   })
+
+  test('reports a component that fails while rendering the first route', async ({ page }) => {
+    await page.addInitScript(() => {
+      // The editor store mints node ids inside component setup, so this
+      // fails through Vue's error handler rather than module evaluation.
+      Object.defineProperty(crypto, 'getRandomValues', {
+        configurable: true,
+        value() {
+          throw new TypeError('getRandomValues is unavailable')
+        }
+      })
+    })
+    await page.goto('/')
+
+    const notice = page.getByRole('alert')
+    await expect(notice.getByRole('heading', { level: 1 })).toHaveText("OpenPencil couldn't start")
+    await notice.getByText('Details', { exact: true }).click()
+    await expect(notice.locator('pre')).toContainText('getRandomValues is unavailable')
+  })
 })

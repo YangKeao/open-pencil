@@ -1,8 +1,8 @@
 import { describe, expect, mock, test } from 'bun:test'
 
-import { defineComponent, h, nextTick, onMounted } from 'vue'
+import { ErrorCodes, defineComponent, h, nextTick, onMounted } from 'vue'
 
-import { observeBootErrors } from '@/app/shell/support/boot'
+import { isFatalBootErrorInfo, observeBootErrors } from '@/app/shell/support/boot'
 
 import { createTestRenderer, hostNode } from '#tests/helpers/vue/renderer'
 
@@ -19,6 +19,23 @@ function mountApp(root: ReturnType<typeof defineComponent>) {
   }
   return { app, observer, logged }
 }
+
+describe('fatal boot error info', () => {
+  test.each([
+    ['setup function', ErrorCodes.SETUP_FUNCTION, true],
+    ['render function', ErrorCodes.RENDER_FUNCTION, true],
+    ['async component loader', ErrorCodes.ASYNC_COMPONENT_LOADER, true],
+    ['scheduler flush', ErrorCodes.SCHEDULER, true],
+    ['component update', ErrorCodes.COMPONENT_UPDATE, true],
+    ['mounted hook', 'm', false],
+    ['native event handler', ErrorCodes.NATIVE_EVENT_HANDLER, false],
+    ['watcher callback', 3, false]
+  ])('classifies %s in development and production form alike', (dev, code, fatal) => {
+    expect(isFatalBootErrorInfo(dev)).toBe(fatal)
+    // Production builds replace the string with the error reference URL.
+    expect(isFatalBootErrorInfo(`https://vuejs.org/error-reference/#runtime-${code}`)).toBe(fatal)
+  })
+})
 
 describe('boot error observer', () => {
   test('captures a setup failure that leaves the first render blank', async () => {
