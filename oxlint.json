@@ -9,8 +9,12 @@
     "node"
   ],
   "jsPlugins": [
-    "./lint/plugin.js"
+    "./lint/plugin.js",
+    "eslint-plugin-compat"
   ],
+  "settings": {
+    "browsers": ["chrome 111", "edge 111", "firefox 128", "safari 16.4", "ios_saf 16.4"]
+  },
   "env": {
     "browser": true,
     "es2024": true
@@ -165,7 +169,6 @@
     "open-pencil/no-document-query-selector-in-vue": "error",
     "open-pencil/no-direct-selection-tool-state-mutation": "error",
     "open-pencil/no-math-random": "error",
-    "open-pencil/no-builtins-above-browser-baseline": "error",
     "open-pencil/no-hardcoded-color-constants": "error",
     "open-pencil/no-hand-rolled-color": "error",
     "open-pencil/no-raw-console-format": "off",
@@ -445,6 +448,15 @@
       ],
       "rules": {
         "open-pencil/no-useless-pass-through-wrappers": "error"
+      }
+    },
+    {
+      "files": [
+        "src/**/*.{ts,vue}",
+        "packages/{scene-graph,pen,kiwi,fig,core,dom-css,vue}/src/**/*.{ts,vue}"
+      ],
+      "rules": {
+        "compat/compat": "error"
       }
     },
     {

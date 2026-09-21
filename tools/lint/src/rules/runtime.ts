@@ -181,56 +181,6 @@ const noTsSuppressionComments = {
   }
 } satisfies RuleDefinition
 
-/**
- * Static built-ins that are newer than the supported browser baseline
- * (`src/app/shell/support/baseline.ts`). Vite lowers syntax to that baseline
- * but never polyfills APIs, so one of these in the app bundle is a blank
- * window on an older engine. Keyed by global, listing the members to reject.
- */
-const BUILTINS_ABOVE_BROWSER_BASELINE: Record<string, readonly string[]> = {
-  Promise: ['withResolvers', 'try'],
-  Object: ['groupBy'],
-  Map: ['groupBy'],
-  Array: ['fromAsync'],
-  Iterator: ['from'],
-  RegExp: ['escape'],
-  Error: ['isError'],
-  Uint8Array: ['fromBase64', 'fromHex'],
-  Intl: ['DurationFormat'],
-  Atomics: ['pause', 'waitAsync']
-}
-
-/** Packages that only run in Node and may use its newer built-ins. */
-const NODE_ONLY_PACKAGES = /\/packages\/(?:cli|mcp|harness)\//
-/** Directories that never ship to a browser. */
-const NON_SHIPPED_DIRECTORIES = /\/(?:tests|tools|scripts)\//
-
-const noBuiltinsAboveBrowserBaseline = {
-  meta: {
-    docs: {
-      description:
-        'Disallow static built-ins newer than the supported browser baseline; Vite does not polyfill them'
-    }
-  },
-  create(context) {
-    const file = normalizedFilename(context)
-    if (!file.includes('/src/')) return {}
-    if (NODE_ONLY_PACKAGES.test(file) || NON_SHIPPED_DIRECTORIES.test(file)) return {}
-    return {
-      MemberExpression(node) {
-        if (node.object.type !== 'Identifier' || node.property.type !== 'Identifier') return
-        if (node.computed) return
-        const members = BUILTINS_ABOVE_BROWSER_BASELINE[node.object.name]
-        if (!members?.includes(node.property.name)) return
-        context.report({
-          node,
-          message: `${node.object.name}.${node.property.name} is newer than the supported browser baseline (src/app/shell/support/baseline.ts) and is not polyfilled; use a helper such as createDeferred() or es-toolkit instead.`
-        })
-      }
-    }
-  }
-} satisfies RuleDefinition
-
 const noCoreBrowserGlobals = {
   meta: {
     docs: {
@@ -452,7 +402,6 @@ export {
   noReflectDeleteGlobalThisOutsideTests,
   noTsSuppressionComments,
   noCoreBrowserGlobals,
-  noBuiltinsAboveBrowserBaseline,
   noDirectGraphEmitterSubscriptions,
   noOnUnmountedInCompositionRoots,
   noComposableStateWrappers,

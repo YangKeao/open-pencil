@@ -7,9 +7,9 @@ export interface Deferred<T> {
 /**
  * A promise whose settlement is owned by the caller.
  *
- * Equivalent to `Promise.withResolvers()`, which the app avoids because it is
- * newer than the supported browser baseline (`@/app/shell/support/baseline`),
- * and `es-toolkit` offers no counterpart.
+ * Equivalent to `Promise.withResolvers()`, which is newer than the supported
+ * browser baseline (`@/app/shell/support/baseline`) and therefore outside the
+ * ES2023 lib; `es-toolkit` offers no counterpart.
  */
 export function createDeferred<T>(): Deferred<T> {
   let resolve: Deferred<T>['resolve'] = () => undefined

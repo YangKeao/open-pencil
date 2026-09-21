@@ -8,9 +8,13 @@
  * there. Pinned explicitly so a Vite major cannot move it silently.
  *
  * Vite lowers syntax but never polyfills APIs, so every runtime built-in the
- * app uses must exist in these versions; the `no-builtins-above-browser-baseline`
- * lint rule rejects the known offenders. On macOS the desktop app renders in
- * the system WebKit, which reaches Safari 16.4 with macOS 13.3.
+ * app uses must exist in these versions. Two data-driven checks enforce that:
+ * the TypeScript `lib` of the app and browser-shipped packages is pinned to
+ * `BASELINE_ECMASCRIPT_LIB`, so a newer built-in such as
+ * `Promise.withResolvers` is a type error, and `compat/compat` (browserslist
+ * plus MDN compatibility data) rejects Web APIs these engines lack. On macOS
+ * the desktop app renders in the system WebKit, which reaches Safari 16.4
+ * with macOS 13.3.
  */
 export const BROWSER_BASELINE = {
   chrome: 111,
@@ -26,6 +30,24 @@ export type BaselineBrowser = keyof typeof BROWSER_BASELINE
 export function viteBuildTarget(): string[] {
   return Object.entries(BROWSER_BASELINE).map(([browser, version]) => `${browser}${version}`)
 }
+
+/**
+ * Browserslist queries derived from the baseline, which `oxlint.json` must
+ * repeat literally in `settings.browsers` for `compat/compat`; a unit test
+ * keeps the two in step.
+ */
+export function browserslistQueries(): string[] {
+  return Object.entries(BROWSER_BASELINE).map(
+    ([browser, version]) => `${browser === 'ios' ? 'ios_saf' : browser} ${version}`
+  )
+}
+
+/**
+ * The ECMAScript edition every baseline engine implements in full, and so the
+ * TypeScript `lib` the app and browser-shipped packages pin. Web APIs are
+ * checked separately by `compat/compat` because `lib.dom` is unversioned.
+ */
+export const BASELINE_ECMASCRIPT_LIB = 'ES2023'
 
 /**
  * A capability that is absent on any engine older than the baseline. The gate
@@ -69,7 +91,8 @@ export const SUPPORT_SENTINELS: readonly SupportSentinel[] = [
   {
     name: 'String.prototype.isWellFormed',
     since: { chrome: 111, edge: 111, firefox: 119, safari: 16.4, ios: 16.4 },
-    test: () => typeof String.prototype.isWellFormed === 'function'
+    // ES2024, so beyond the ES2023 lib on purpose; probe by name.
+    test: () => 'isWellFormed' in String.prototype
   },
   {
     name: 'CSS color-mix()',
