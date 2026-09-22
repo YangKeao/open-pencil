@@ -18,3 +18,15 @@ Full browser and native WebDriver test suites were not run. This release is not 
 The full nix-darwin configuration build also passed using the published GitHub ZIP, including fixed-hash download verification. The resulting Nix-store App passed `codesign --verify --deep --strict`.
 
 System activation completed. The Homebrew `/Applications/OpenPencil.app` was removed, and `/Applications/Nix Apps/OpenPencil Local.app` passed signature verification and the complete live HTTP MCP acceptance sequence (including initial file opening). The original `good-things-v2.fig` was then reopened without editing it.
+
+## Revision 2 — disabled throttling and FIG save fix
+
+Source: `7375c2c30bbdb468907146e0a2a74cf05b4a49bb`. App version `0.15.1+yangkeao.2`.
+
+The desktop window explicitly configures `backgroundThrottling: "disabled"`. A separately committed save fix uses an additional MessagePort listener instead of replacing the parser's original-archive response handler. Previously an unchanged imported document could hang during save; the existing edit-before-save smoke test missed that path.
+
+The new shared-port regression test failed before the fix and passed after it. All six related population/import/export tests passed (30 assertions). Production lint, types, web and native builds and code-signature verification passed. Live MCP verified immediate save after opening an unchanged fixture, then page switching, editing, save and reopen. Full test suites were not repeated.
+
+The user's open design was recovered through a same-value page-name update followed by Save As, invalidating the affected archive cache without changing the page name. The recovered file parsed independently with three pages and 244 nodes. The original disk file and an additional backup were preserved.
+
+Background acceptance is pending: attempts to hide through the UI automation shortcut did not move the app out of the foreground according to LaunchServices. The passing runs therefore count only as foreground validation. Long background idle, minimized windows and battery impact remain unverified.

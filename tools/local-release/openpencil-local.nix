@@ -2,11 +2,11 @@
 
 stdenvNoCC.mkDerivation {
   pname = "openpencil-local";
-  version = "0.15.1-yangkeao.1";
+  version = "0.15.1-yangkeao.2";
 
   src = fetchurl {
-    url = "https://github.com/YangKeao/open-pencil/releases/download/local-v0.15.1-1/OpenPencil-Local-0.15.1-yangkeao.1-aarch64-darwin.zip";
-    hash = "sha256-bWRjUfOHFo7W6/u3RXNeqfZXSF9oODvpPyyWer9eXmk=";
+    url = "https://github.com/YangKeao/open-pencil/releases/download/local-v0.15.1-2/OpenPencil-Local-0.15.1-yangkeao.2-aarch64-darwin.zip";
+    hash = "sha256-y1dKzHUqJU/DAd3nyQDmBqtO9Cf7KiyGEEXmqgPh2JE=";
   };
 
   nativeBuildInputs = [ unzip ];
