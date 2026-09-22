@@ -86,22 +86,23 @@ test('a failed page-scoped switch leaves the visible page unchanged', async () =
 
 test('switch_page waits for the editor to finish switching', async () => {
   const { second, store, switchPage, call } = setup()
-  const entered = Promise.withResolvers<void>()
-  const ready = Promise.withResolvers<void>()
+  const entered = Promise.withResolvers<undefined>()
+  const ready = Promise.withResolvers<undefined>()
   switchPage.mockImplementation(async (id) => {
-    entered.resolve()
+    entered.resolve(undefined)
     await ready.promise
     store.state.currentPageId = id
   })
   let completed = false
   const response = call('switch_page', { page: second.id }).then(() => {
     completed = true
+    return undefined
   })
   try {
     await Promise.race([entered.promise, response])
     expect(completed).toBe(false)
   } finally {
-    ready.resolve()
+    ready.resolve(undefined)
     await response
   }
   expect(store.state.currentPageId).toBe(second.id)
