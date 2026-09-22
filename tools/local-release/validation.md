@@ -30,3 +30,5 @@ The new shared-port regression test failed before the fix and passed after it. A
 The user's open design was recovered through a same-value page-name update followed by Save As, invalidating the affected archive cache without changing the page name. The recovered file parsed independently with three pages and 244 nodes. The original disk file and an additional backup were preserved.
 
 Background acceptance is pending: attempts to hide through the UI automation shortcut did not move the app out of the foreground according to LaunchServices. The passing runs therefore count only as foreground validation. Long background idle, minimized windows and battery impact remain unverified.
+
+The recovered real design also opened and saved successfully in revision 2 without an intervening edit. The full nix-darwin build downloaded the published revision-2 ZIP, verified its fixed hash and completed; the Nix-packaged App passed signature verification. System activation still requires the user to run sudo.
