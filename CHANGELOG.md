@@ -8,6 +8,8 @@
 
 ### Fixed
 
+- Preserve shared FIG worker responses so saving an unchanged imported document does not hang.
+
 - Persist explicit MCP `switch_page` calls in the editor before replying, while keeping ordinary `page_id`-scoped operations on background pages.
 
 ## 0.15.1 — 2026-09-18

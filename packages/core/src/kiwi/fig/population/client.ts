@@ -163,6 +163,7 @@ function createPopulationWorkerClient(
   const releaseSubscription = () => {
     unbind?.()
     unbind = undefined
+    port?.removeEventListener('message', receivePortMessage)
   }
   const fail = (emit = true) => {
     stale = true
@@ -218,9 +219,14 @@ function createPopulationWorkerClient(
       deleted: result.delta.deleted.length
     })
   }
+  function receivePortMessage(event: MessageEvent<FigSessionResponse>) {
+    if (event.data.type === 'population-result' || event.data.type === 'population-error') {
+      receive(event.data)
+    }
+  }
   if (port) {
-    port.onmessage = (event: MessageEvent<FigSessionResponse>) =>
-      receive(event.data as WorkerResult)
+    // The parser still handles original-archive responses on this shared port.
+    port.addEventListener('message', receivePortMessage)
     port.start()
   } else {
     worker.onmessage = (event: MessageEvent<WorkerResult>) => receive(event.data)
