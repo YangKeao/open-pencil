@@ -27,7 +27,7 @@ let startupCheckStarted = false
 let updateCheckInFlight: Promise<void> | null = null
 
 export async function checkForAppUpdate(options: UpdateCheckOptions) {
-  if (!isTauri()) return
+  if (!isTauri() || import.meta.env.VITE_OPENPENCIL_DISABLE_UPDATES === 'true') return
   if (updateCheckInFlight) return updateCheckInFlight
 
   const { silent = false, messages } = options
