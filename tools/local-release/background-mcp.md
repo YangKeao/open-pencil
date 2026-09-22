@@ -22,3 +22,7 @@ This strongly points to an operation-completion contract coupled to visibility-d
 Acceptance must cover foreground, fully covered, minimized, and hidden windows; foreground-to-background transitions during requests; first open and lazy page loads; and a return to the foreground showing the committed state. Repeat after at least five minutes in the background to exercise suspension. Verify invalid files, missing fonts, cancellation and real layout/render errors still propagate. Sleeping Macs and a quit App remain outside the background-operation guarantee.
 
 Reference: https://v2.tauri.app/reference/javascript/api/namespacewebview/#backgroundthrottling
+
+## Revision 2 installed verification
+
+`backgroundThrottling: "disabled"` is now installed in revision 2. With the window hidden through its native menu and LaunchServices confirming `(hidden)`, read-only requests and saving an already loaded document succeeded. Opening a new file still returned a 20-second RPC timeout; switching an already loaded page still returned the presentation timeout. Restoring the window allowed the pending import to finish. This verifies that the configuration change alone does not fix the animation-frame/presentation dependency described above.
