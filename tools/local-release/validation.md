@@ -17,4 +17,4 @@ Full browser and native WebDriver test suites were not run. This release is not 
 
 The full nix-darwin configuration build also passed using the published GitHub ZIP, including fixed-hash download verification. The resulting Nix-store App passed `codesign --verify --deep --strict`.
 
-System activation and a smoke check from `/Applications/Nix Apps` are deployment checks to record after `darwin-rebuild switch` completes.
+System activation completed. The Homebrew `/Applications/OpenPencil.app` was removed, and `/Applications/Nix Apps/OpenPencil Local.app` passed signature verification and the complete live HTTP MCP acceptance sequence (including initial file opening). The original `good-things-v2.fig` was then reopened without editing it.
