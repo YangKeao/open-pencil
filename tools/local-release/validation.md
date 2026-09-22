@@ -15,4 +15,6 @@ Initial file opening returned a 20-second RPC timeout while the app was in the b
 
 Full browser and native WebDriver test suites were not run. This release is not Developer ID signed or notarized. It disables in-app upstream updates and requires the separately installed MCP server.
 
+The full nix-darwin configuration build also passed using the published GitHub ZIP, including fixed-hash download verification. The resulting Nix-store App passed `codesign --verify --deep --strict`.
+
 System activation and a smoke check from `/Applications/Nix Apps` are deployment checks to record after `darwin-rebuild switch` completes.
