@@ -38,6 +38,10 @@ The desktop app starts `openpencil-mcp-http` automatically in production Tauri b
 - WebSocket bridge: `ws://127.0.0.1:7601`
 - MCP Streamable HTTP: `http://127.0.0.1:7600/mcp`
 
+## MCP page selection
+
+Use `switch_page` to explicitly change the active page for subsequent calls. The call completes after the editor finishes switching. Pass `page_id` to scope an individual read or edit without changing the visible page.
+
 ## CLI Commands
 
 ```bash

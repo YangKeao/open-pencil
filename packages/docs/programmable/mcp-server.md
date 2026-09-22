@@ -151,7 +151,7 @@ Endpoints are available over both active transports:
 7. **Save** — `save_file` to write back to `.fig`
 8. **Close** — `close_file` to close an open document tab; it prompts to save unsaved changes.
 
-Most tools accept optional `document_id` and `page_id` fields. Pass them explicitly for agent workflows instead of relying on the visible active tab/page. `create_page` only creates a page; call `switch_page` separately when the workflow should change the active page.
+Most tools accept optional `document_id` and `page_id` fields. Pass them explicitly for agent workflows instead of relying on the visible active tab/page. `create_page` only creates a page; call `switch_page` separately when the workflow should change the active page. A successful `switch_page` persists for later calls without `page_id` and waits for the editor to finish switching. A `page_id` on an ordinary read or edit only scopes that operation; it does not switch the visible page.
 
 ## AI Agent Skill
 

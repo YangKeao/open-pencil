@@ -8,7 +8,7 @@ import {
 } from '@open-pencil/core/tools'
 import type { JSONObject } from '@open-pencil/scene-graph/primitives'
 
-import type { AutomationTarget } from '@/app/automation/bridge/target'
+import { isUnknownRecord, type AutomationTarget } from '@/app/automation/bridge/target'
 import { executeAtomicEditorTool } from '@/app/automation/execution/editor'
 import { ensureGraphFonts } from '@/app/editor/fonts'
 import { useLibraryService } from '@/app/libraries'
@@ -72,6 +72,17 @@ export function createAutomationToolHandler(makeFigma: FigmaFactory) {
       )
     } else {
       result = await def.execute(figma, toolArgs)
+    }
+
+    // A successful explicit switch changes editor state, not just this call's API.
+    // Merely targeting another page for a read/edit must leave the visible page alone.
+    if (
+      toolName === 'switch_page' &&
+      isUnknownRecord(result) &&
+      typeof result.id === 'string' &&
+      result.id !== store.state.currentPageId
+    ) {
+      await store.switchPage(result.id)
     }
 
     if (def.mutates) {
