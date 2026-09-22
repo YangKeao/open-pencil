@@ -6,10 +6,10 @@ The bundle identifier stays `net.dannote.open-pencil` to retain existing setting
 
 ## Build
 
-Requirements: Apple Silicon macOS, Xcode Command Line Tools, Rust/Cargo, Bun 1.4.2. From a clean repository checkout:
+Requirements: Apple Silicon macOS, Xcode Command Line Tools, Rust 1.98.1 (stable)/Cargo, Bun 1.4.2. From a clean repository checkout:
 
 ```sh
-bash tools/local-release/src/build-macos.sh
+RUSTUP_TOOLCHAIN=stable bash tools/local-release/src/build-macos.sh
 ```
 
 Output: `scratch/releases/local-v0.15.1-1/`. The `.app` is ad-hoc signed for local use, not Developer ID signed or notarized. The build records the source commit and ZIP checksum. Do not use the upstream `v*` publishing workflow; this fork does not publish npm packages or signed updater artifacts.
@@ -19,3 +19,21 @@ Output: `scratch/releases/local-v0.15.1-1/`. The `.app` is ad-hoc signed for loc
 Publish the ZIP, `SHA256SUMS`, and `source-commit.txt` on this fork under the immutable tag `local-v0.15.1-1`. Nix installs the ZIP by fixed URL and hash. Never replace an asset under an existing version: publish a new local tag and update the Nix package instead.
 
 Keep the original `.fig` files; installing this app does not migrate or rewrite them. To roll back, remove the local package from nix-darwin and restore the `openpencil` Homebrew cask entry, then rebuild. Do not run both variants simultaneously on the default MCP ports.
+
+## Nix-Darwin configuration
+
+Copy `tools/local-release/openpencil-local.nix` into `/private/etc/nix-darwin/packages/openpencil-local.nix`. In `packages.nix`, bind `openPencilLocal = pkgs.callPackage ./packages/openpencil-local.nix {};` and add `openPencilLocal` to `environment.systemPackages`. Remove only `"openpencil"` from `homebrew.casks`.
+
+Build first, then quit OpenPencil and activate:
+
+```sh
+darwin-rebuild build --flake /private/etc/nix-darwin#Yangs-MacBook-Pro
+sudo darwin-rebuild switch --flake /private/etc/nix-darwin#Yangs-MacBook-Pro
+open '/Applications/Nix Apps/OpenPencil Local.app'
+```
+
+The physical `/private/etc` path avoids Nix rejecting the `/etc` symlink. Activation removes the old cask using the existing Homebrew cleanup policy. No user preferences, recovery data or design files are removed.
+
+## Validation and limits
+
+See [validation.md](validation.md) for the observed checks. Keep the app in the foreground for MCP operations that open or switch pages: background presentation can still time out.
