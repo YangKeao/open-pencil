@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+- Disable desktop WebView background throttling on supported platforms for background automation.
+
 ### Fixed
 
 - Persist explicit MCP `switch_page` calls in the editor before replying, while keeping ordinary `page_id`-scoped operations on background pages.
